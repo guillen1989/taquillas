@@ -3,6 +3,7 @@ import espnow
 import network
 import time
 from machine import Pin
+import machine
 import json
 
 # Pin del LED integrado en la ESP32-C3 Super Mini
@@ -50,31 +51,44 @@ print("Receptor ESP-NOW en marcha.")
 
 def handshake():
     try:
-        print('Esperando mensajes...')
+        print('Esperando SYN...')
         
         host, msg = e.recv(timeout_ms=-1)
         if msg:
-            
+            if 'SYN' not in msg:
+                blink(2,50)
+                print('esperaba SYN, pero recibe:')
+                print(msg)
+                machine.reset()
             if 'SYN' in msg:
     #             blink(1,50)
                 print('SYN recibido')
                 success = e.send(mac_centralita, 'SYN-ACK')
-    #             if success:
-                print('SYN-ACK enviado')
-    #             blink(2,50)
-                
-                host, msg = e.recv()
-                if msg:
-                    if 'ACK' in msg:
-                        print('##### CONEXIÓN ESTABLECIDA	#####')
-                        return True
+            
+                if success:
+                    print('SYN-ACK enviado')
+        #             blink(2,50)
+                    print('##### CONEXIÓN ESTABLECIDA	#####')	
+                    return True
+#                 host, msg = e.recv()
+#                 if msg:
+#                     if 'ACK' in msg:
+#                         print('##### CONEXIÓN ESTABLECIDA	#####')
+#                         return True
     except:
         return False
         
 
 while not handshake():
-    blink(3,100)
+    blink(3,200)
 blink(10,50)
-
+print('esperando mensajes')
 while True:
-    blink(100,200)
+    
+    host, msg = e.recv(timeout_ms=-1)
+    if msg:
+        print(msg)
+        blink(1,50)
+        if 'SYN' in msg:
+            machine.reset()
+#     blink(100,200)
