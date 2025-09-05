@@ -65,11 +65,12 @@ def handshake():
 #             blink(2,200)        
             if 'SYN' in msg and 'ACK' in msg:
                 print('SYN-ACK recibido')
-                success = e.send(mac_torre_1, 'ACK')
-#                 blink(3,200)
-
-                print('''ACK enviado.
-                #####	CONEXIÓN ESTABLECIDA	#####''')
+                print('#####	CONEXIÓN ESTABLECIDA	#####')
+#                 success = e.send(mac_torre_1, 'ACK')
+# #                 blink(3,200)
+# 
+#                 print('''ACK enviado.
+#                 #####	CONEXIÓN ESTABLECIDA	#####''')
                 return True    
         else:
             print("Fallo en el handshake. Reintentando...")
@@ -83,5 +84,23 @@ def handshake():
 while not handshake():
     time.sleep(1)
 blink(10,50)
-while True:
-    blink(100,200)
+i=0
+intentos=0
+while handshake:
+    
+    i+=1
+    success = e.send(mac_torre_1, str(i))
+    if success:
+        blink(1,50)
+    else:
+        blink(2,50)
+        intentos+=1
+        time.sleep(1)
+        if intentos >=3:
+            while not handshake():
+                time.sleep(1)
+            blink(10,50)
+#             machine.reset()
+    print(str(i))
+    time.sleep(0.5)
+#     blink(100,200)
