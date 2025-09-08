@@ -1,0 +1,5 @@
+#PINES TOUCH
+# (miso, mosi, sck, cs, irq)
+# (12, 13, 14, 33, 0)
+
+Ha costado un huevo averiguarlo
