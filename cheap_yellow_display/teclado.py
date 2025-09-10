@@ -1,3 +1,4 @@
+import sys
 from machine import Pin, SPI
 import machine
 import time
@@ -18,6 +19,9 @@ touch = Touch(spi, cs=cs, int_pin=irq, int_handler=None)
 backlight = Pin(27, Pin.OUT)
 backlight.on()
 unispace_font = XglcdFont('fonts/Dejavu24x43.c', 24, 43)
+
+
+num_introducido='1'
 def formar_teclado():
     white_color = color565(255, 255, 255)  # white color
     black_color = color565(0, 0, 0)        # black color
@@ -49,8 +53,12 @@ def formar_teclado():
             display.draw_vline( line['x'],line['y'],line['w'], white_color)
         if line['tipo']!='h'and line['tipo']!='v':
             display.draw_text(line['x'],line['y'] , line['tipo'], font, white_color, black_color)
-
+text_msg=''
+num_introducido='2'
 def detectar_valores(coordenadas):
+    global num_introducido, password, text_msg, unispace_font
+    print(num_introducido)
+
     teclas_coords=[
     {'valor':'1', 'x_inf':254, 'x_sup':736, 'y_inf':510, 'y_sup':1024},
     {'valor':'2', 'x_inf':736, 'x_sup':1536, 'y_inf':510, 'y_sup':1024},
@@ -76,7 +84,6 @@ def detectar_valores(coordenadas):
 
 tocado=False
 formar_teclado()
-num_introducido='1'
 password='1234'
 font_size_w = unispace_font.width
 font_size_h = unispace_font.height
@@ -91,13 +98,13 @@ while True:
             tocado=True
             print(f"Coordenadas leídas: {touch_coords}")
             print(detectar_valores(touch_coords))
+            detectar_valores(touch_coords)
             if detectar_valores(touch_coords) == 'DEL':
                 long=len(num_introducido)
                 mensaje=''
                 for l in range(long-1):
                     mensaje=mensaje+' '
                 mensaje=mensaje + num_introducido[-1]
-                print(mensaje)
                 display.draw_text(x_center, y_center, mensaje, unispace_font, black_color, black_color)
                 num_introducido=num_introducido[:-1]
                 text_msg=num_introducido
@@ -119,14 +126,11 @@ while True:
             if detectar_valores(touch_coords) != 'DEL'and detectar_valores(touch_coords)!='ENT':
                 num_introducido = num_introducido + detectar_valores(touch_coords)
                 text_msg=num_introducido
+            time.sleep(0.3)
         else:
             text_msg=num_introducido
             display.draw_text(x_center, y_center, text_msg, unispace_font, white_color, black_color)
 
-        #time.sleep(0)
-        #display.draw_text(x_center, y_center, text_msg, unispace_font, black_color, black_color)
-        #print('apagando pantalla')
-        time.sleep(0.2)
         tocado=False
     except Exception as e:
-        print(e)
+        sys.print_exception(e)
