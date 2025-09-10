@@ -97,39 +97,17 @@ def pantalla_inicial(borrar=False):
         for linea in lineas:
             display.draw_text(linea['x'],linea['y'] , linea['texto'], font, black_color, black_color)
         display.draw_image('images/negro100.raw', x=110, y=300, w=100, h=100)
-def pantalla_eleccion(borrar=False):
-    white_color = color565(255, 255, 255)  # white color
-    black_color = color565(0, 0, 0)        # black color
-    linea1='ABRIR'
-    linea2='UNA'
-    linea3='TAQUILLA'
-    linea4='CERRAR'
-    lineas=[
-    {'texto':linea1, 'x':100, 'y':50},
-    {'texto':linea2, 'x':120, 'y':100},
-    {'texto':linea3, 'x':50, 'y':150},
-    {'texto':linea4, 'x':100, 'y':350},
-    ]
-    display.draw_hline( 0,240,319, white_color)
-    if not borrar:
-        for linea in lineas:
-            display.draw_text(linea['x'],linea['y'] , linea['texto'], font, white_color, black_color)
-    if borrar:
-        for linea in lineas:
-            display.draw_text(linea['x'],linea['y'] , linea['texto'], font, black_color, black_color)
 tocado=False
-num_introducido='1234'
+num_introducido='1'
 password='1234'
 y_center =25
 x_center = 50
-pantalla_inicial()
 inicio=True
+segunda_pantalla=False
+pantalla_inicial()
 teclado_impreso=False
-pin_ok=False
-eligiendo=False
-abrir_taquilla=False
-try:
-    while True:
+while True:
+    try:
         touch_coords = touch.raw_touch()
         if touch_coords:
             if inicio:
@@ -154,7 +132,6 @@ try:
                         time.sleep(0.5)
                         display.draw_text(x_center, y_center,text_msg, font, black_color, black_color)
                         num_introducido=''
-                        pin_ok=True
                     else:
                         text_msg='BAD PIN'
                         display.draw_text(x_center, y_center,text_msg, font, white_color, black_color)
@@ -165,64 +142,14 @@ try:
                 if detectar_valores(touch_coords) != 'DEL'and detectar_valores(touch_coords)!='ENT':
                     num_introducido = num_introducido + detectar_valores(touch_coords)
                     text_msg=num_introducido
-                print('durmiendo')
                 time.sleep(0.3)
-            if pin_ok and eligiendo:
-                print(touch_coords)
-                if touch_coords[1]<950:
-                    abrir_taquilla=True
-                    print('elegiste abrir una taquilla')
-                else:
-                    print('elegiste cerrar')
-                    inicio=True
-                    teclado_impreso=False
-                    pin_ok=False
-                    eligiendo=False
-                    abrir_taquilla=False
-                    display.clear(hlines=40)
-                    pantalla_inicial()
-                    continue
-        if not inicio and not teclado_impreso and not pin_ok:
-            print('formando teclado')
+        if not inicio and not teclado_impreso:
             display.clear(hlines=40)
             formar_teclado()
-            display.draw_text(x_center, y_center ,'PIN CODE', font, white_color, black_color)
-            time.sleep(1)
-            display.draw_text(x_center, y_center ,'PIN CODE', font, black_color, black_color)
             teclado_impreso=True
-        if not inicio and teclado_impreso and not pin_ok:
-            print('not inicio and teclado impreso and not pin_ok')
+        if teclado_impreso:
             display.draw_text(x_center, y_center ,num_introducido, font, white_color, black_color)
-        if teclado_impreso and pin_ok and not abrir_taquilla:
-            print('teclado impreso, pin ok')
-            display.clear(hlines=40)
-            pantalla_eleccion()
-            teclado_impreso=False
-            eligiendo=True
-        if abrir_taquilla and not teclado_impreso:
-            print('menú abrir taquilla')
-            display.clear(hlines=40)
-            formar_teclado()
-            display.draw_text(0, 25 ,'CUAL ABRO', font, white_color, black_color)
-            time.sleep(1)
-            display.draw_text(0, 25 ,'CUAL ABRO', font, black_color, black_color)
-            teclado_impreso=True
-            eligiendo=False
-            #CIERRE AUTOMÁTICO
-            time.sleep(2)
-            inicio=True
-            teclado_impreso=False
-            pin_ok=False
-            eligiendo=False
-            abrir_taquilla=False
-            display.clear(hlines=40)
-            pantalla_inicial()
 
-except Exception as e:
-    print(e)
-    try:
+    except Exception as e:
         sys.print_exception()
-    except:
-        machine.soft_reset()
-        print('reiniciando')
 
