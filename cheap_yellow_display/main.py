@@ -1,5 +1,7 @@
+import network
+import espnow
 import sys
-from machine import Pin, SPI
+from machine import Pin, SPI, UART
 import machine
 import time
 from xpt2046 import Touch
@@ -20,6 +22,58 @@ touch = Touch(spi, cs=cs, int_pin=irq, int_handler=None,
 backlight = Pin(27, Pin.OUT)
 backlight.on()
 font = XglcdFont('fonts/Dejavu24x43.c', 24, 43)
+# VARIABLES ESP NOW
+receiver_mac = b'\x98\x88\xe0\xc9\x28\x1c'
+# Se configura la interfaz Wi-Fi de la ESP32 en modo estación.
+sta = network.WLAN(network.STA_IF)
+sta.active(True)
+sta.disconnect()
+
+# Se inicializa el objeto ESP-NOW.
+e = espnow.ESPNow()
+e.active(True)
+# Configura un tiempo de espera infinito para la función de envío.
+e.config(timeout_ms=-1)
+
+# Se añade el "peer" (dispositivo receptor) al que se enviarán los mensajes.
+e.add_peer(receiver_mac)
+if e:
+    print("ESP NOW en marcha")
+LED_PIN = 17
+
+rojo =4
+verde =17
+azul =16
+
+
+UART_ID = 1
+TX_PIN = 22  # Conectar al pin RX de la Placa A
+RX_PIN = 21  # Conectar al pin TX de la Placa A
+
+# Configuración del UART
+# baudrate debe ser el mismo en ambas placas
+try:
+    uart = UART(UART_ID, baudrate=115200, tx=Pin(TX_PIN), rx=Pin(RX_PIN))
+    print("UART Receptor iniciado. Esperando datos...")
+except:
+    print("Error activando UART")
+
+# Se definen las funciones para controlar el LED
+
+# def led_on():
+#     led.value(0)
+# def led_off():
+#     led.value(1)
+def blink(led,times, duration):
+    """Hace parpadear el LED un número de veces con una duración específica."""
+    led = Pin(led, Pin.OUT)
+    for _ in range(times):
+        led.value(0)
+        time.sleep_ms(duration)
+        led.value(1)
+        time.sleep_ms(duration)
+
+blink(verde,5,100)
 def formar_teclado(borrar=False):
     white_color = color565(255, 255, 255)  # white color
     black_color = color565(0, 0, 0)        # black color
@@ -126,6 +180,41 @@ pantalla_inicial()
 state="start"
 try:
     while True:
+        try:
+            if uart.any():
+                blink(verde,2,50)
+                # Lee la línea completa hasta el salto de línea ('\n')
+                # El timeout es para no esperar indefinidamente si el mensaje es incompleto.
+                linea_bytes = uart.readline()
+                
+                if linea_bytes:
+                    # Decodifica los bytes a un string (MicroPython trabaja con bytes)
+                    mensaje_recibido = linea_bytes.decode('utf-8').strip()
+                    if mensaje_recibido:
+                    
+                        print("Mensaje recibido: ")
+                        print(mensaje_recibido)
+                    
+                    esp_message=mensaje_recibido
+                    success = e.send(receiver_mac, esp_message)
+                    if success:
+                        print("Mensaje enviado con éxito.")
+                        blink(azul,1, 50) # Parpadeo corto para indicar éxito.
+                    else:
+                        print("Error al enviar el mensaje.")
+                        blink(azul,3, 100) # Parpadeo más largo para indicar fallo.
+                    time.sleep(2)
+
+
+#             time.sleep_ms(100) # Pequeña pausa para no saturar el CPU
+#             if not uart.any():
+#                 esp_message=("waiting for card")
+                
+            
+
+        except:
+            continue
+        
         if state == "wait_for_PIN":
             time_now=time.ticks_ms()
             time_diff=time.ticks_diff(time_now, inicio_timeout)
@@ -136,7 +225,6 @@ try:
         touch_coords = touch.raw_touch()
         if touch_coords:
 ##### BLOQUE DE LÓGICA PARA INTERPRETAR LOS TOQUES EN LA PANTALLA #####
-            #if inicio:
             if state == "start":
                 state="draw_keyboard"
             if state=="wait_for_PIN":
@@ -178,6 +266,7 @@ try:
                 if touch_coords[1]<950:
                     state="choose_locker"
                     print('elegiste abrir una taquilla')
+                    state="start"
                 else:
                     print('elegiste cerrar')
                     state="close_locker"
