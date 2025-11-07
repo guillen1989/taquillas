@@ -53,6 +53,12 @@ TECLADO_COORDS = [
 
 # VARIABLES ESP NOW
 receiver_mac = b'\x98\x88\xe0\xc9\x28\x1c'
+mac_torre_1 = b'\x98\x88\xe0\xc9\x28\x1c'
+mac_torre_2 = b'\x98\x88\xe0\xc9\x28\x1c'
+mac_torre_3 = b'\x98\x88\xe0\xc9\x28\x1c'
+mac_torre_4 = b'\x98\x88\xe0\xc9\x28\x1c'
+mac_torre_5 = b'\x98\x88\xe0\xc9\x28\x1c'
+torres=[mac_torre_1,mac_torre_2,mac_torre_3,mac_torre_4, mac_torre_5]
 # CONFIGURACIÓN Y ARRANQUE ESP NOW
 sta = network.WLAN(network.STA_IF)
 sta.active(True)
@@ -174,7 +180,45 @@ def pantalla_eleccion(borrar=False):
         for linea in lineas:
             display.draw_text(linea['x'],linea['y'] , linea['texto'], font, black_color, black_color)
 
-tocado=False
+def opening_locker_screen(borrar=False,taquilla='111'):
+    # Se usan las variables globales white_color y black_color.
+    linea1=''
+    linea2='ABRIENDO'
+    linea3='TAQUILLA'
+    linea4= taquilla
+    lineas=[
+    {'texto':linea1, 'x':100, 'y':50},
+    {'texto':linea2, 'x':50, 'y':100},
+    {'texto':linea3, 'x':50, 'y':150},
+    {'texto':linea4, 'x':100, 'y':350},
+    ]
+    #display.draw_hline( 0,240,319, white_color)
+    if not borrar:
+        for linea in lineas:
+            display.draw_text(linea['x'],linea['y'] , linea['texto'], font, white_color, black_color)
+    if borrar:
+        for linea in lineas:
+            display.draw_text(linea['x'],linea['y'] , linea['texto'], font, black_color, black_color)
+# -- GESTIÓN DE PERSISTENCIA (ARCHIVO JSON) --
+# Este bloque de código gestiona un archivo llamado "persistencia" para guardar el estado de las taquillas.
+# Si el archivo existe, lo lee; si no, lo crea con un estado inicial.
+try:
+    g=open("persistencia", "r")
+    data=json.load(g)
+    print("json abierto")
+    g.close()
+except:
+    print("json no disponible. Creando archivo...")
+    f=open("persistencia", "w")
+    taquillas=[
+        {'nombre':'1', 'torre': 1, 'GPIO' : 5,'tarjeta': '',"fecha_inicio":0},
+        {'nombre':'2','torre': 1, 'GPIO' : 6,'tarjeta': "","fecha_inicio":0},
+        {'nombre':'3','torre': 1, 'GPIO' : 7,'tarjeta': "","fecha_inicio":0},
+        {'nombre':'4','torre': 1, 'GPIO' : 9,'tarjeta': "","fecha_inicio":0}
+    ]
+    f.write(json.dumps(taquillas))
+    f.close()
+#tocado=False
 num_introducido='1234'
 password='1234'
 y_center =25
@@ -182,9 +226,9 @@ x_center = 50
 pantalla_inicial()
 state="start"
 gc.collect()
-
 try:
     while True:
+        asignada=False
         gc.collect() # Recolección de basura en cada iteración del bucle principal
         try:
             if uart.any():
@@ -197,17 +241,99 @@ try:
                     
                         print("Mensaje recibido: ")
                         print(mensaje_recibido)
-                    
-                    esp_message=mensaje_recibido
-                    success = e.send(receiver_mac, esp_message)
-                    if success:
-                        print("Mensaje enviado con éxito.")
-                        blink(azul,2, 50) 
-                    else:
-                        print("Error al enviar el mensaje.")
-                        blink(azul,3, 100)
-                    time.sleep(2)
+                        g=open("persistencia", "r")
+                        data=json.load(g)
+                        g.close()
+                        tarjeta=mensaje_recibido
+                        print("cargando datos de persistencia")
 
+                        for taquilla in data:
+                            if tarjeta == taquilla['tarjeta']:
+                                # Si la tarjeta ya está asignada, se prepara el mensaje para "liberar" la taquilla.
+                                esp_message='liberar'+taquilla['nombre']
+                                taquilla_ocupada=taquilla
+                                asignada=True
+                                print("la tarjeta ya está asignada a una taquilla")
+                                # Se determina la MAC del receptor basándose en el número de torre.
+                                # Nota: En el JSON inicial, todas las torres son la 1.
+                                if taquilla['torre']==1:
+                                    receiver_mac=mac_torre_1
+                                if taquilla['torre']==2:
+                                    receiver_mac=mac_torre_2
+                                if taquilla['torre']==3:
+                                    receiver_mac=mac_torre_3
+                                if taquilla['torre']==4:
+                                    receiver_mac=mac_torre_4
+                                if taquilla['torre']==5:
+                                    receiver_mac=mac_torre_5
+                
+                                # Se actualiza el estado de la taquilla a libre en el archivo de persistencia.
+                                taquilla['tarjeta']=''
+                                g=open("persistencia", "w")
+                                g.write(json.dumps(data))
+                                g.close()
+                                print('taquilla ' + taquilla['nombre']+ ' liberada')
+                                success = e.send(receiver_mac, esp_message)
+                                if success:
+                                    print("Mensaje enviado con éxito.")
+                                    print(esp_message)
+                                    blink(azul,2, 50) 
+                                else:
+                                    print("Error al enviar el mensaje.")
+                                    blink(azul,3, 100)
+                                #time.sleep(2)
+                                state="opening locker"
+                                break
+            # Si la tarjeta no estaba asignada, se busca una taquilla libre.
+                        if not asignada:
+                            print("tarjeta sin taquilla asignada")
+                            todo_ocupado=True
+                            for taquilla in data:
+                                if taquilla['tarjeta']=='':
+                                    # Si se encuentra una taquilla libre, se le asigna la tarjeta.
+                                    taquilla['tarjeta']=tarjeta
+                                    # Se prepara el mensaje para "ocupar" la taquilla.
+                                    esp_message='ocupar'+taquilla['nombre']
+                                    # Se actualiza el estado de la taquilla en el archivo.
+                                    g=open("persistencia", "w")
+                                    g.write(json.dumps(data))
+                                    g.close()
+                                    print('ocupa la taquilla ' + taquilla['nombre'])
+                                    todo_ocupado=False
+                                    # Se determina la MAC del receptor según el número de torre.
+                                    if taquilla['torre']==1:
+                                        receiver_mac=mac_torre_1
+                                    if taquilla['torre']==2:
+                                        receiver_mac=mac_torre_2
+                                    if taquilla['torre']==3:
+                                        receiver_mac=mac_torre_3
+                                    if taquilla['torre']==4:
+                                        receiver_mac=mac_torre_4
+                                    if taquilla['torre']==5:
+                                        receiver_mac=mac_torre_5
+                                    success = e.send(receiver_mac, esp_message)
+                                    if success:
+                                        print("Mensaje enviado con éxito.")
+                                        print(esp_message)
+                                        blink(azul,2, 50) 
+                                    else:
+                                        print("Error al enviar el mensaje.")
+                                        blink(azul,3, 100)
+                                    #time.sleep(2)
+                                    state="opening locker"
+                                    break
+                        if todo_ocupado:
+                            print('no quedan taquillas disponibles')
+#                    esp_message=mensaje_recibido
+#                    success = e.send(receiver_mac, esp_message)
+#                    if success:
+#                        print("Mensaje enviado con éxito.")
+#                        print(esp_message)
+#                        blink(azul,2, 50) 
+#                    else:
+#                        print("Error al enviar el mensaje.")
+#                        blink(azul,3, 100)
+                    #time.sleep(2)
         except:
             continue
         
@@ -315,6 +441,13 @@ try:
             time.sleep(2)
             state="wait_for_locker"
             gc.collect()
+        if state == "opening locker":
+            display.clear(hlines=40)
+            opening_locker_screen(taquilla=taquilla['nombre'])
+            time.sleep(3)
+            opening_locker_screen(borrar=True, taquilla=taquilla['nombre'])
+            state="start"
+            pantalla_inicial()
 
 except Exception as e:
     print(e)
