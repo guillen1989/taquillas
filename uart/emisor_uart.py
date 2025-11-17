@@ -1,4 +1,6 @@
 from machine import UART, Pin
+import machine
+import gc
 import time
 from mfrc522 import MFRC522
 # Se inicializa el LED integrado de la placa ESP32
@@ -24,12 +26,14 @@ blink(5,100)
 # Usamos UART 2 por ser el más libre (configurable en cualquier GPIO)
 # ¡Asegúrate de que estos pines GPIO estén conectados correctamente!
 UART_ID = 1
-TX_PIN = 10  # Conectar al pin RX de la Placa B
+TX_PIN = 3  # PIN DUMMY. ANTES ERA EL 10 PERO CAUSA CONFLICTO CON EL RST DEL RFID. Conectar al pin RX de la Placa B
+#TX_PIN = 10  # Conectar al pin RX de la Placa B
 RX_PIN = 1  # Conectar al pin TX de la Placa B
 
 # Configuración del UART
 # baudrate debe ser el mismo en ambas placas
 uart = UART(UART_ID, baudrate=115200, tx=Pin(TX_PIN), rx=Pin(RX_PIN))
+print('uart funcionando')
 
 contador = 0
 
@@ -37,12 +41,13 @@ contador = 0
 
 while True:
     reader.init()
+    print('reader funcionando')
     (stat, tag_type) = reader.request(reader.REQIDL)
     mensaje = "Hola desde ESP32 A. Mensaje #{}".format(contador)
     if stat == reader.OK:
         (stat, uid) = reader.SelectTagSN()
 
-        #print(type(uid))
+        print(uid)
         tarjeta_leida=reader.tohexstring(uid)
         #print(type(tarjeta_leida))
         mensaje=tarjeta_leida
@@ -51,9 +56,14 @@ while True:
         #print(len(mensaje))
         if len(mensaje)==24:
             #print("leído correcto, longitud 24")
-            #print(mensaje)
+            print(mensaje)
             uart.write(mensaje.encode('utf-8') + b'\n')
-            #print("Mensaje enviado:", mensaje)
+            print("Mensaje enviado:", mensaje)
         contador += 1
         blink(1,50)
+        #reader._tocard(PICC_HALT_A, [0, 0], 1)
+        reader.reset()
         time.sleep(2)
+        #gc.collect()
+    else:
+        time.sleep(0.3)
