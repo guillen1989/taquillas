@@ -1,5 +1,5 @@
 Pantalla:
-ble_main.py
+main.py
 
 Lector RFID:
 emisor_uart.py
