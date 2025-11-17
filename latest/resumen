@@ -1,0 +1,9 @@
+Pantalla:
+ble_main.py
+
+Lector RFID:
+emisor_uart.py
+
+Torres de taquillas:
+1torre.py
+2torre.py
