@@ -188,11 +188,30 @@ def pantalla_eleccion(borrar=False):
         for linea in lineas:
             display.draw_text(linea['x'],linea['y'] , linea['texto'], font, black_color, black_color)
 
+def lockers_full_screen(borrar=False):
+    # ... (cuerpo de la función igual)
+    linea1='SIN'
+    linea2='TAQUILLAS'
+    linea3='LIBRES'
+    linea4= ''
+    lineas=[
+    {'texto':linea1, 'x':100, 'y':50},
+    {'texto':linea2, 'x':50, 'y':100},
+    {'texto':linea3, 'x':50, 'y':150},
+    {'texto':linea4, 'x':100, 'y':350},
+    ]
+    #display.draw_hline( 0,240,319, white_color)
+    if not borrar:
+        for linea in lineas:
+            display.draw_text(linea['x'],linea['y'] , linea['texto'], font, white_color, black_color)
+    if borrar:
+        for linea in lineas:
+            display.draw_text(linea['x'],linea['y'] , linea['texto'], font, black_color, black_color)
 def opening_locker_screen(borrar=False,taquilla='111'):
-    # ... (Cuerpo de la función igual)
+    # ... (cuerpo de la función igual)
     linea1=''
-    linea2='ABRIENDO'
-    linea3='TAQUILLA'
+    linea2='abriendo'
+    linea3='taquilla'
     linea4= taquilla
     lineas=[
     {'texto':linea1, 'x':100, 'y':50},
@@ -298,10 +317,14 @@ except:
     f=open("persistencia", "w")
     # Aseguramos que haya taquillas en la Torre 1 y Torre 2 para el ejemplo
     taquillas=[
-        {'nombre':'1', 'torre': 2, 'GPIO' : 5,'tarjeta': '',"fecha_inicio":0},
-        {'nombre':'2','torre': 2, 'GPIO' : 6,'tarjeta': "","fecha_inicio":0},
-        {'nombre':'3','torre': 2, 'GPIO' : 7,'tarjeta': "","fecha_inicio":0}, # Taquilla 3 en Torre 2
-        {'nombre':'4','torre': 2, 'GPIO' : 9,'tarjeta': "","fecha_inicio":0} # Taquilla 4 en Torre 2
+        {'nombre':'1','codigo':'1', 'torre': 1, 'GPIO' : 5,'tarjeta': '',"fecha_inicio":0},
+        {'nombre':'2','codigo':'2','torre': 1, 'GPIO' : 6,'tarjeta': "","fecha_inicio":0},
+        {'nombre':'3','codigo':'3','torre': 1, 'GPIO' : 7,'tarjeta': "","fecha_inicio":0}, # Taquilla 3 en Torre 2
+        {'nombre':'4','codigo':'4','torre': 1, 'GPIO' : 9,'tarjeta': "","fecha_inicio":0},
+        {'nombre':'5','codigo':'1', 'torre': 2, 'GPIO' : 5,'tarjeta': '',"fecha_inicio":0},
+        {'nombre':'6','codigo':'2','torre': 2, 'GPIO' : 6,'tarjeta': "","fecha_inicio":0},
+        {'nombre':'7','codigo':'3','torre': 2, 'GPIO' : 7,'tarjeta': "","fecha_inicio":0}, # Taquilla 3 en Torre 2
+        {'nombre':'8','codigo':'4','torre': 2, 'GPIO' : 9,'tarjeta': "","fecha_inicio":0} # Taquilla 4 en Torre 2
     ]
     f.write(json.dumps(taquillas))
     f.close()
@@ -362,7 +385,7 @@ async def main_async_loop():
                         success = await send_command_via_ble(
                             taquilla_asignada['torre'],
                             'liberar',
-                            taquilla_asignada['nombre']
+                            taquilla_asignada['codigo']
                         )
 
                         if success:
@@ -394,7 +417,7 @@ async def main_async_loop():
                             success = await send_command_via_ble(
                                 taquilla_libre['torre'],
                                 'ocupar',
-                                taquilla_libre['nombre']
+                                taquilla_libre['codigo']
                             )
 
                             if success:
@@ -412,6 +435,7 @@ async def main_async_loop():
 
                         else:
                             print('No quedan taquillas disponibles.')
+                            state = 'no free lockers'
                             # (Podrías añadir una pantalla de error aquí)
                             blink(rojo, 3, 100) # Parpadeo de error
 
@@ -573,7 +597,14 @@ async def main_async_loop():
             taquilla_ocupada = None
             state="start"
             pantalla_inicial()
-
+        if state == 'no free lockers':
+            gc.collect()
+            display.clear(hlines=5)
+            lockers_full_screen()
+            await asyncio.sleep(2)
+            lockers_full_screen(borrar=True)
+            state = 'start'
+            pantalla_inicial()
         # Pausa para ceder el control al loop de asyncio
         await asyncio.sleep_ms(1)
 
