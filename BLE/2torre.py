@@ -1,6 +1,6 @@
-# torre2.py - BLUETOOTH LOW ENERGY PERIFÉRICO (SERVIDOR) para Torre 2
-# Lógica LED: Par enciende (ON), Impar apaga (OFF).
-
+# Rui Santos & Sara Santos - Random Nerd Tutorials
+# Complete project details at https://RandomNerdTutorials.com/micropython-esp32-bluetooth-low-energy-ble/
+import time
 from micropython import const
 import asyncio
 import aioble
@@ -9,100 +9,157 @@ import struct
 from machine import Pin
 from random import randint
 
+# Init pines
+pin3= Pin(3, Pin.OUT)
+pin7= Pin(7, Pin.OUT)
+pin9= Pin(9, Pin.OUT)
+pin20= Pin(20, Pin.OUT)
+cerraduras=[
+    {'puerta':1, 'pin':pin3},
+    {'puerta':2, 'pin':pin7},
+    {'puerta':3, 'pin':pin9},
+    {'puerta':4, 'pin':pin20},
+]
 # Init LED
-# Asegúrate de usar el pin correcto para tu placa (ejemplo: Pin(8))
-LED_PIN = 8 
-led = Pin(LED_PIN, Pin.OUT)
-led.value(0) # LED apagado por defecto
+led = Pin(8, Pin.OUT)
+led.value(0)
 
-# --- UUIDs (DEBEN COINCIDIR con madre.py) ---
+# Init random value
+value = 0
+
+# See the following for generating UUIDs:
+# https://www.uuidgenerator.net/
 _BLE_SERVICE_UUID = bluetooth.UUID('19b10000-e8f2-537e-4f6c-d104768a1214')
 _BLE_SENSOR_CHAR_UUID = bluetooth.UUID('19b10001-e8f2-537e-4f6c-d104768a1214')
 _BLE_LED_UUID = bluetooth.UUID('19b10002-e8f2-537e-4f6c-d104768a1214')
+# How frequently to send advertising beacons.
+_ADV_INTERVAL_MS = 250
 
-# Nombre de publicidad para la Torre 2
-ADVERTISEMENT_NAME = "ESP32_T2" 
-_ADV_INTERVAL_MS = 250_000
-
-# --- Registro del Servidor GATT ---
+# Register GATT server, the service and characteristics
 ble_service = aioble.Service(_BLE_SERVICE_UUID)
-# Característica del sensor (mantenida por consistencia, no usada aquí)
 sensor_characteristic = aioble.Characteristic(ble_service, _BLE_SENSOR_CHAR_UUID, read=True, notify=True)
-# Característica del LED (escritura)
 led_characteristic = aioble.Characteristic(ble_service, _BLE_LED_UUID, read=True, write=True, notify=True, capture=True)
 
+# Register service(s)
 aioble.register_services(ble_service)
-
-# --- Funciones Auxiliares ---
+async def blink(n_blinks, duration_ms):
+    for i in range(n_blinks):
+        led.value(0)
+        await asyncio.sleep_ms(duration_ms)
+        led.value(1)
+        await asyncio.sleep_ms(duration_ms)
+# Helper to encode the data characteristic UTF-8
+def _encode_data(data):
+    return str(data).encode('utf-8')
 
 # Helper to decode the LED characteristic encoding (bytes).
 def _decode_data(data):
-    """Decodifica el byte recibido a un entero."""
     try:
         if data is not None:
-            # Asume que el cliente envía un byte simple (struct.pack('<b', command))
-            number = int.from_bytes(data, 'big') 
+            # Decode the UTF-8 data
+            number = int.from_bytes(data, 'big')
             return number
     except Exception as e:
-        print(f"Error decodificando el dato: {e}")
+        print("Error decoding message:", e)
         return None
 
-# --- Tareas Asíncronas ---
-
+# Get sensor readings
+def get_random_value():
+    return randint(0,100)
+async def comprobation_blink():
+    while True:
+        led.value(0)
+        await asyncio.sleep(1)
+        led.value(1)
+        await asyncio.sleep(1)
+# Serially wait for connections. Don't advertise while a central is connected.
 async def peripheral_task():
-    """Tarea de publicidad y espera de conexión."""
     while True:
         try:
             async with await aioble.advertise(
                 _ADV_INTERVAL_MS,
-                name=ADVERTISEMENT_NAME,
+                name="TORRE_2",
                 services=[_BLE_SERVICE_UUID],
                 ) as connection:
-                    print(f"Connection from {connection.device}")
-                    # Esperar a que la conexión se pierda
-                    await connection.disconnected()
-                    print("Disconnected.")          
+                    print("Connection from", connection.device)
+                    await connection.disconnected()             
         except asyncio.CancelledError:
+            # Catch the CancelledError
             print("Peripheral task cancelled")
-            break
         except Exception as e:
-            print(f"Error in peripheral_task: {e}")
+            print("Error in peripheral_task:", e)
         finally:
+            # Ensure the loop continues to the next iteration
             await asyncio.sleep_ms(100)
 
 async def wait_for_write():
-    """Tarea que espera la escritura en la característica del LED."""
     while True:
         try:
-            # Esperar a que se escriba un valor
+            print('esperando conexiones')
             connection, data = await led_characteristic.written()
-            
-            # Decodificar el valor
-            value = _decode_data(data)
-            
-            if value is not None:
-                print(f'-> COMANDO RECIBIDO: Valor = {value}')
-                
-                # Lógica Específica de la Torre 2: Par enciende, Impar apaga
-                if value % 2 == 0:
-                    print('   -> Turning LED ON (Valor Par)')
-                    led.value(1)
-                else:
-                    print('   -> Turning LED OFF (Valor Impar)')
-                    led.value(0)
-            
+            await asyncio.sleep_ms(0)
+            print(data)
+            print(type)
+            data = _decode_data(data)
+            #print('Connection: ', connection)
+            #print('Data: ', data)
+            await blink(2,100)
+            match=False
+            for cerradura in cerraduras:
+                if cerradura['puerta'] ==data:
+                    #activar el pin correspondiente
+                    print('Abriendo puerta:')
+                    print('puerta: ', cerradura['puerta'])
+                    print('pin: ', cerradura['pin'])
+                    pin = cerradura['pin']
+                    pin.value(1)
+                    await asyncio.sleep_ms(0)
+                    await asyncio.sleep(2)
+                    print('fin de la espera. cerrando puerta')
+                    pin.value(0)
+                    await asyncio.sleep_ms(0)
+                    print('puerta cerrada')
+                    await blink(3,100)
+                    match=True
+                    break
+            if match == False:
+                print(f'No se ha encontrado una taquilla que coincida con el mensaje recibido: {data}')
+            '''
+            if data == 1:
+                print('Turning LED ON')
+                led.value(1)
+            elif data == 0:
+                print('Turning LED OFF')
+                led.value(0)
+            else:
+                print(data)
+                '''
         except asyncio.CancelledError:
-            print("Write task cancelled")
-            break
+            # Catch the CancelledError
+            print("Peripheral task cancelled")
         except Exception as e:
-            print(f"Error in write task: {e}")
+            print("Error in peripheral_task:", e)
         finally:
+            # Ensure the loop continues to the next iteration
             await asyncio.sleep_ms(100)
             
-# --- Ejecución Principal ---
-async def main():
-    t_peripheral = asyncio.create_task(peripheral_task())
-    t_write = asyncio.create_task(wait_for_write())
-    await asyncio.gather(t_peripheral, t_write) # Esperar a ambas tareas
+pines=[pin3,pin7,pin9,pin20]
+for pin in pines:
+    pin.value(0)
+
+# Init LED
+led = Pin(8, Pin.OUT)
+led.value(0)
 print('arrancando')
-asyncio.run(main())
+async def main():
+    t1 =  asyncio.create_task(comprobation_blink())
+    t2 = asyncio.create_task(peripheral_task())
+    t3 = asyncio.create_task(wait_for_write())
+    await asyncio.gather( t2, t3)
+try:    
+    asyncio.run(main())
+except Exception as e:
+    print('error: ', e)
+    machine.reset()
+
+
