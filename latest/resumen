@@ -1,9 +1,0 @@
-Pantalla:
-cheap_yellow_display/main.py
-
-Lector RFID:
-uart/emisor_uart.py
-
-Torres de taquillas:
-BLE/1torre.py
-BLE/2torre.py
