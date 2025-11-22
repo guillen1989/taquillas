@@ -12,6 +12,7 @@ Apertura de taquillas mediante interfaz táctil y comunicación inalámbrica BLE
 *Los diodos son imprescindibles para evitar el reinicio del esp32 que controla las cerraduras causado por el ruido inductivo que se produce al abrirse el solenoide de las cerraduras.*
 # Conexiones y Diagramas
 * Diagrama de Bloques: Incluye una imagen (diagrama_bloques.png) para mostrar el flujo de datos (Taquilla Central $\leftrightarrow$ Módulo Control BLE; Módulo RFID $\rightarrow$ Módulo Control UART).
+![Diagram de bloques](hardware/Block diagram.png)
 * Esquemático Detallado: Enlaza al archivo esquematico.pdf y describe brevemente dónde se conectan los pines críticos (GPIOs usados para los relés, pines SPI para la pantalla, pines UART).Aislamiento de Ruido (Nota de Mantenimiento CLAVE): Si el sistema presenta fallos o reinicios (WDT Timeout), el problema es ruido. Verifique que los Diodos 1N4007 sigan correctamente soldados en las cerraduras. Si se usa una fuente de alimentación diferente, considerar un filtro L-C o una doble fuente de alimentación.
 # Arquitectura de Software (Firmware)
 * display.py (Módulo de control): Lógica principal, interfaz táctil, y Master BLE para enviar comandos de apertura.
