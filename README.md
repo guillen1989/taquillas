@@ -4,7 +4,7 @@
 Apertura de taquillas mediante interfaz táctil y comunicación inalámbrica BLE con un módulo de relés, y un módulo RFID vía UART
 # Hardware Utilizado (Bill Of Materials)
 * Control de cada torre de taquillas: ESP32-C3 Mini.
-* Módulo maestro/pantalla táctil: TFT LCD de 3.2"/3.5" (ILI9341 con controlador XPT2046).
+* Módulo maestro/pantalla táctil: TFT LCD de 3.2"/3.5" (ILI9341 con controlador XPT2046) También conocido como Cheap Yellow Display.
 * Regulador de Voltaje: Módulo LM2596S (Fuente de alimentación única).
 * Actuadores: Módulos de Relé (4 canales).
 * Cargas: Cerraduras Electromagnéticas (Electroimanes).
@@ -45,6 +45,8 @@ Apertura de taquillas mediante interfaz táctil y comunicación inalámbrica BLE
 **Dependencias** requiere MicroPython y las siguientes librerías: aioble, micropython-ili9341, mfrc522.
 
 **Proceso de Flasheo** 
+
+Instrucciones para instalar micropython en el Cheap Yellow Display (ESP32 ) y en el resto de placas (ESP32 C3 super mini)
 
 Pasos necesarios para cargar el firmware en los ESP32.
 
