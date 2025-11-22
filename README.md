@@ -48,9 +48,10 @@ Apertura de taquillas mediante interfaz táctil y comunicación inalámbrica BLE
 
 Instrucciones para instalar micropython en el Cheap Yellow Display (firmware/flash_files/esp32.bin ) y en las placas ESP32 C3 super mini (firmware/flash_files/c3generic.bin)
 
-Hay distintas maneras de instalar el firmware:
+Para poder ejecutar el código en las placas ESP32 que controlan todo el sistema, primero hay que instalar en cada placa un firmware que ejecute micropython. Hay varias formas de hacerlo:
 
 [Usando el programa Thonny, con interfaz gráfica](https://docs.sunfounder.com/projects/esp32-starter-kit/es/latest/micropython/python_start/install_micropython.html)
+
 [Mediante esptool en la línea de comandos](https://randomnerdtutorials.com/flashing-micropython-firmware-esptool-py-esp32-esp8266/)
 **IDs Críticos**
 
