@@ -15,10 +15,15 @@ Apertura de taquillas mediante interfaz táctil y comunicación inalámbrica BLE
   ![Diagrama de bloques](hardware/Block_diagram.png)
 
 * Esquemático Detallado
+  
   **GPIOs usados para los relés:**  3, 7, 9, 20.
+  
   **GPIOs para el lector RFID:** COMPLETAR
+  
   **Pines SPI para la pantalla:** COMPLETAR
+  
   **Pines UART**
+  
   * Pantalla
   1. Emisor: pin 22
   2. Receptor: pin 20
