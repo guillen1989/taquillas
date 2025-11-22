@@ -13,7 +13,7 @@ Apertura de taquillas mediante interfaz táctil y comunicación inalámbrica BLE
 # Conexiones y Diagramas
 * Diagrama de bloques mostrando el flujo de datos
   ![Diagrama de bloques](hardware/Block_diagram.png)
-  [PDF con el diagrama de bloques](hardware/Block_diagram.pdf)
+  [PDF con el diagrama de bloques](hardware/PDF_Block_diagram.pdf)
 
 * Esquemático Detallado
   
