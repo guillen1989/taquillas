@@ -39,9 +39,9 @@ Apertura de taquillas mediante interfaz táctil y comunicación inalámbrica BLE
     ![Diagrama esquemático de la torre de taquillas](hardware/Locker_tower_diagram.png)
    [PDF con estos mismos diagramas esquemáticos](hardware/Schematic_diagrams.pdf)
 # Arquitectura de Software (Firmware)
-* display.py (Módulo de control): Lógica principal, interfaz táctil, y Master BLE para enviar comandos de apertura.
-* 1torre.py, 2torre.py, 3torre.py.. (Módulo Relés): Slave BLE que recibe comandos y controla el estado de los pines de relé (Pin 3, 7, 9, 20).
-* RFID_reader.py (Lector RFID): Lógica de lectura RFID (MFRC522) y comunicación por UART con el módulo de control.
+* [display.py](firmware/display.pi) (Módulo de control): Lógica principal, interfaz táctil, y Master BLE para enviar comandos de apertura.
+* [1torre.py](firmware/1torre.py), [2torre.py](firmware/2torre.py), 3torre.py.. (Módulo Relés): Slave BLE que recibe comandos y controla el estado de los pines de relé (Pin 3, 7, 9, 20).
+* [RFID_reader.py](firmware/RFID_reader.py) (Lector RFID): Lógica de lectura RFID (MFRC522) y comunicación por UART con el módulo de control.
 # Configuración e Instalación (Para Futuros Mantenedores)
 
 **Dependencias** requiere MicroPython y las siguientes librerías: aioble, micropython-ili9341, mfrc522.
