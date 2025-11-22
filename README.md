@@ -34,8 +34,9 @@ Apertura de taquillas mediante interfaz táctil y comunicación inalámbrica BLE
      
   Nota de Mantenimiento CLAVE: Si el sistema presenta fallos o reinicios (WDT Timeout), el problema es ruido. Verifique que los Diodos 1N4007 sigan correctamente soldados en las cerraduras. Si se usa una fuente de alimentación diferente, considerar un filtro L-C o una doble fuente de alimentación.
   
-  ![Diagrama esquemático de la torre de taquillas](hardware/Locker_tower_diagram.png)
+
   ![Diagrama esquemático del módulo central y el lector RFID](hardware/Screen_RFID_reader_diagram.png)
+    ![Diagrama esquemático de la torre de taquillas](hardware/Locker_tower_diagram.png)
    [PDF con estos mismos diagramas esquemáticos](hardware/Schematic_diagrams.pdf)
 # Arquitectura de Software (Firmware)
 * display.py (Módulo de control): Lógica principal, interfaz táctil, y Master BLE para enviar comandos de apertura.
