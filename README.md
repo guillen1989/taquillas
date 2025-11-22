@@ -1,5 +1,5 @@
 
-# Control de Taquillas Inteligentes con ESP32-C3 y BLE
+# Control de Taquillas Inteligentes con ESP32 y Bluetooth de Baja Energía (BLE)
 # Funcionalidad
 Apertura de taquillas mediante interfaz táctil y comunicación inalámbrica BLE con un módulo de relés, y un módulo RFID vía UART
 # Hardware Utilizado (Bill Of Materials)
