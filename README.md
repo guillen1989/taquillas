@@ -47,6 +47,7 @@ Apertura de taquillas mediante interfaz táctil y comunicación inalámbrica BLE
 **Proceso de Flasheo** 
 
 Pasos necesarios para cargar el firmware en los ESP32.
+
 **IDs Críticos**
 
 Lista los UUIDs del servicio y las características BLE para facilitar el debugging de la comunicación inalámbrica.
