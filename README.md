@@ -46,7 +46,7 @@ Apertura de taquillas mediante interfaz táctil y comunicación inalámbrica BLE
 
 **Proceso de Flasheo** 
 
-Instrucciones para instalar micropython en el Cheap Yellow Display (ESP32 ) y en el resto de placas (ESP32 C3 super mini)
+Instrucciones para instalar micropython en el Cheap Yellow Display (firmware/flash_files/esp32.bin ) y en las placas ESP32 C3 super mini (firmware/flash_files/c3generic.bin)
 
 Pasos necesarios para cargar el firmware en los ESP32.
 
