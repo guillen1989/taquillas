@@ -14,6 +14,7 @@ Apertura de taquillas mediante interfaz táctil y comunicación inalámbrica BLE
 * Diagrama de Bloques: Incluye una imagen (diagrama_bloques.png) para mostrar el flujo de datos (Taquilla Central $\leftrightarrow$ Módulo Control BLE; Módulo RFID $\rightarrow$ Módulo Control UART).
 ![Diagrama de bloques](hardware/Block_diagram.png)
 * Esquemático Detallado: Enlaza al archivo esquematico.pdf y describe brevemente dónde se conectan los pines críticos (GPIOs usados para los relés, pines SPI para la pantalla, pines UART).Aislamiento de Ruido (Nota de Mantenimiento CLAVE): Si el sistema presenta fallos o reinicios (WDT Timeout), el problema es ruido. Verifique que los Diodos 1N4007 sigan correctamente soldados en las cerraduras. Si se usa una fuente de alimentación diferente, considerar un filtro L-C o una doble fuente de alimentación.
+* ![esquema](hardware/Locker_tower_diagram.png)
 # Arquitectura de Software (Firmware)
 * display.py (Módulo de control): Lógica principal, interfaz táctil, y Master BLE para enviar comandos de apertura.
 * 1torre.py, 2torre.py, 3torre.py.. (Módulo Relés): Slave BLE que recibe comandos y controla el estado de los pines de relé (Pin 3, 7, 9, 20).
