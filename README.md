@@ -20,7 +20,7 @@ Apertura de taquillas mediante interfaz táctil y comunicación inalámbrica BLE
   
   **GPIOs para el lector RFID:** COMPLETAR
   
-  **Pines SPI para la pantalla:** COMPLETAR
+  **Pines SPI para la pantalla:** Pueden variar según el fabricante del Cheap Yellow Display.
   
   **Pines UART**
   
