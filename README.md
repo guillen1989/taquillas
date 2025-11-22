@@ -11,10 +11,11 @@ Apertura de taquillas mediante interfaz táctil y comunicación inalámbrica BLE
 * Protección Crítica: Diodos de Volante 1N4007 (instalados en paralelo con cada cerradura electromagnética). 
 *Los diodos son imprescindibles para evitar el reinicio del esp32 que controla las cerraduras causado por el ruido inductivo que se produce al abrirse el solenoide de las cerraduras.*
 # Conexiones y Diagramas
-* Diagrama de Bloques: Incluye una imagen (diagrama_bloques.png) para mostrar el flujo de datos (Taquilla Central $\leftrightarrow$ Módulo Control BLE; Módulo RFID $\rightarrow$ Módulo Control UART).
-![Diagrama de bloques](hardware/Block_diagram.png)
+* Diagrama de Bloques mostrando el flujo de datos
+  ![Diagrama de bloques](hardware/Block_diagram.png)
 
-* Esquemático Detallado: Enlaza al archivo esquematico.pdf y describe brevemente dónde se conectan los pines críticos (GPIOs usados para los relés, pines SPI para la pantalla, pines UART).Aislamiento de Ruido (Nota de Mantenimiento CLAVE): Si el sistema presenta fallos o reinicios (WDT Timeout), el problema es ruido. Verifique que los Diodos 1N4007 sigan correctamente soldados en las cerraduras. Si se usa una fuente de alimentación diferente, considerar un filtro L-C o una doble fuente de alimentación.
+* Esquemático Detallado
+  [PDF con los diagramas esquemáticos](hardware/o.pdf) describe brevemente dónde se conectan los pines críticos (GPIOs usados para los relés, pines SPI para la pantalla, pines UART).Aislamiento de Ruido (Nota de Mantenimiento CLAVE): Si el sistema presenta fallos o reinicios (WDT Timeout), el problema es ruido. Verifique que los Diodos 1N4007 sigan correctamente soldados en las cerraduras. Si se usa una fuente de alimentación diferente, considerar un filtro L-C o una doble fuente de alimentación.
   ![Diagrama esquemático de la torre de taquillas](hardware/Locker_tower_diagram.png)
   ![Diagrama esquemático del módulo central y el lector RFID](hardware/Screen_RFID_reader_diagram.png)
 # Arquitectura de Software (Firmware)
