@@ -11,8 +11,9 @@ Apertura de taquillas mediante interfaz táctil y comunicación inalámbrica BLE
 * Protección Crítica: Diodos de Volante 1N4007 (instalados en paralelo con cada cerradura electromagnética). 
 *Los diodos son imprescindibles para evitar el reinicio del esp32 que controla las cerraduras causado por el ruido inductivo que se produce al abrirse el solenoide de las cerraduras.*
 # Conexiones y Diagramas
-* Diagrama de Bloques mostrando el flujo de datos
+* Diagrama de bloques mostrando el flujo de datos
   ![Diagrama de bloques](hardware/Block_diagram.png)
+  [PDF con el diagrama de bloques](hardware/Block_diagram.pdf)
 
 * Esquemático Detallado
   
