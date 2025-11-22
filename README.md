@@ -56,6 +56,4 @@ Para poder ejecutar el código en las placas ESP32 que controlan todo el sistema
 
 [Mediante esptool en la línea de comandos](https://randomnerdtutorials.com/flashing-micropython-firmware-esptool-py-esp32-esp8266/)
 
-**IDs Críticos**
 
-Lista los UUIDs del servicio y las características BLE para facilitar el debugging de la comunicación inalámbrica.
