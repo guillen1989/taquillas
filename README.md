@@ -1,7 +1,7 @@
 
 # Control de Taquillas Inteligentes con ESP32 y Bluetooth de Baja Energía (BLE)
 # Funcionalidad
-Apertura de taquillas mediante interfaz táctil y comunicación inalámbrica BLE con un módulo de relés, y un módulo RFID vía UART
+Apertura de taquillas mediante interfaz táctil y comunicación inalámbrica BLE con un módulo de relés. Lectura de tarjetas mediante un módulo RFID que transmite la información vía UART.
 # Hardware Utilizado (Bill Of Materials)
 * Control de cada torre de taquillas: ESP32-C3 Mini.
 * Módulo maestro/pantalla táctil: TFT LCD de 3.2"/3.5" (ILI9341 con controlador XPT2046) También conocido como Cheap Yellow Display.
