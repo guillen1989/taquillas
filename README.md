@@ -25,6 +25,7 @@ Apertura de taquillas mediante interfaz táctil y comunicación inalámbrica BLE
   * Lector RFID
   1. Emisor: pin 10
   2. Receptor: pin 1
+     
   Nota de Mantenimiento CLAVE: Si el sistema presenta fallos o reinicios (WDT Timeout), el problema es ruido. Verifique que los Diodos 1N4007 sigan correctamente soldados en las cerraduras. Si se usa una fuente de alimentación diferente, considerar un filtro L-C o una doble fuente de alimentación.
   
   ![Diagrama esquemático de la torre de taquillas](hardware/Locker_tower_diagram.png)
