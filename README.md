@@ -41,6 +41,12 @@ Apertura de taquillas mediante interfaz táctil y comunicación inalámbrica BLE
 * 1torre.py, 2torre.py, 3torre.py.. (Módulo Relés): Slave BLE que recibe comandos y controla el estado de los pines de relé (Pin 3, 7, 9, 20).
 * RFID_reader.py (Lector RFID): Lógica de lectura RFID (MFRC522) y comunicación por UART con el módulo de control.
 # Configuración e Instalación (Para Futuros Mantenedores)
-* Dependencias: requiere MicroPython y las siguientes librerías: aioble, micropython-ili9341, mfrc522.
-* Proceso de Flasheo: Pasos necesarios para cargar el firmware en los ESP32.
-* IDs Críticos: Lista los UUIDs del servicio y las características BLE para facilitar el debugging de la comunicación inalámbrica.
+
+**Dependencias** requiere MicroPython y las siguientes librerías: aioble, micropython-ili9341, mfrc522.
+
+**Proceso de Flasheo** 
+
+Pasos necesarios para cargar el firmware en los ESP32.
+**IDs Críticos**
+
+Lista los UUIDs del servicio y las características BLE para facilitar el debugging de la comunicación inalámbrica.
