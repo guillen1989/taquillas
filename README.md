@@ -3,10 +3,8 @@
 # Funcionalidad
 Apertura de taquillas mediante interfaz táctil y comunicación inalámbrica BLE con un módulo de relés, y un módulo RFID vía UART
 # Hardware Utilizado (Bill Of Materials)
-Lista completa de componentes, con los detalles críticos que descubriste
-Módulo Central (Maestro): ESP32-C3 Mini.
-Módulo de Control (Esclavo): ESP32-C3 Mini.
-Pantalla: TFT LCD de 3.2"/3.5" (ILI9341 con controlador XPT2046).
+Control de cada torre de taquillas: ESP32-C3 Mini.
+Módulo maestro/pantalla táctil: TFT LCD de 3.2"/3.5" (ILI9341 con controlador XPT2046).
 Regulador de Voltaje: Módulo LM2596S (Fuente de alimentación única).
 Actuadores: Módulos de Relé (4 canales).
 Cargas: Cerraduras Electromagnéticas (Electroimanes).
